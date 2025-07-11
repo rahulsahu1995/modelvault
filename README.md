@@ -1,121 +1,161 @@
-# MiniVault API – Offline Prompt/Response System
+# 🚀 MiniVault API – Offline Prompt/Response System
 
-This project simulates a core feature of ModelVault’s product: receiving a prompt and returning a generated response — all offline, using a (locally hosted LLM) (Falcon RW 1B).
-
-Built with:
-
-- **FastAPI backend running** Falcon RW 1B
-- **Node.js proxy server** (`minivault-api/`)
-- **Python CLI** for prompt testing
-- **Local logging** in both backend and proxy layers
+This project simulates a core feature of **ModelVault’s product**: receiving a prompt and returning a generated response — all offline using a **locally hosted LLM (Falcon RW 1B)**.
 
 ---
 
-📁 Project Structure
+## 🛠️ Built With
+
+- ⚡ **FastAPI** backend serving Falcon RW 1B
+- 🔁 **Node.js proxy server** (folder: `minivault-api/`)
+- 🐍 **Python CLI** for local testing
+- 📝 **JSONL logging** in both backend and proxy layers
+
+---
+
+## 📁 Project Structure
 
 modelvault/
 ├── python-code/
-│ ├── server.py # FastAPI backend using Falcon RW 1B
+│ ├── server.py # FastAPI backend (LLM)
 │ ├── cli.py # Python CLI for prompt testing
 │ ├── logs/
-│ │ └── log.jsonl # Backend logs (prompt + response)
+│ │ └── log.jsonl # Backend logs
 │ └── requirements.txt # Python dependencies
-├── minivault-api/ # Node.js proxy server
-│ ├── app.js # Express server that proxies to FastAPI
+├── minivault-api/
+│ ├── app.js # Node.js proxy server
 │ ├── logs/
-│ │ └── log.jsonl # Node proxy logs
-│ └── package.json # Node.js dependencies
-└── README.md # This documentation
+│ │ └── log.jsonl # Proxy server logs
+│ └── package.json # Node dependencies
+└----modelvault-testcases.postman_collection.json   #postman collection
+|── README.md # This documentation
 
-## 🚀 Setup Instructions
+---
 
-## 1. Clone the Repository
+## 🧰 Setup Instructions
+
+### 📦 1. Clone the Repository
+
 
 ```bash
+
 git clone <your-repo-url>
 cd modelvault
-2. Python Backend (FastAPI)
-Setup Environment
+
+
+🧠 2. Python Backend (FastAPI)
+
+✅ Setup Environment
 
 cd python-code
-
 python -m venv .venv
-source .venv/bin/activate       # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+# Activate the environment:
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
 
-Run FastAPI Server
+
+pip install -r requirements.txt
+▶️ Run the FastAPI Server
+
 
 uvicorn server:app --host 127.0.0.1 --port 8080
-On first run, Falcon RW 1B model (~5.3GB) will download and be cached.
+⚠️ First run will download Falcon RW 1B (~5.3GB) and cache it locally.
 
-3. Node.js Proxy Server (minivault-api)
+
+
+🌐 3. Node.js Proxy Server (minivault-api)
+
 
 cd ../minivault-api
 npm install
 node app.js
 Runs on: http://localhost:3000
 
-Forwards requests to FastAPI backend on port 8080
+Proxies to FastAPI backend on port 8080
+Logs stored in: minivault-api/logs/log.jsonl
 
-Logs to: minivault-api/logs/log.jsonl
 
-4. Test with Python CLI
+🧪 4. Test Using Python CLI
 
 cd ../python-code
 python cli.py --prompt "Tell me a joke."
-python cli.py --prompt "What is artificial intelligence?" --stream API Endpoints
-POST /generate
+python cli.py --prompt "What is artificial intelligence?" --stream
+🌐 API Endpoints
+🔹 POST /generate
 URL: http://localhost:3000/generate
+
 
 Request:
 
 json
-{ "prompt": "What is the capital of France?" }
+{
+  "prompt": "What is the capital of France?"
+}
 Response:
 
 json
-{ "response": "The capital of France is...." }
-POST /generate-stream
+{
+  "response": "The capital of France is Paris."
+}
+
+
+🔸 POST /generate-stream
+
+
 URL: http://localhost:3000/generate-stream
 
-Streams text token-by-token as plain text output.
+Behavior: Streams response character-by-character (or token-by-token) in plain text.
 
 🧾 Logging
-All interactions are saved locally in JSON Lines (.jsonl) format.
+All interactions are stored as JSON lines.
 
-Backend: python-code/logs/log.jsonl
+✔️ Backend log: python-code/logs/log.jsonl
+✔️ Proxy log: minivault-api/logs/log.jsonl
 
-Node Proxy: minivault-api/logs/log.jsonl
 
-Each log contains:
-
+Example:
 json
-
 {
   "timestamp": "2025-07-11T10:34:02.912Z",
   "prompt": "Tell me a joke.",
-  "response": "Why did the chicken cross the road..."
+  "response": "Why did the chicken cross the road?"
 }
 
-## Model Info
-Model: tiiuae/falcon-rw-1b
+🧠 Model Details
 
-Runs Locally: (no internet needed after first download)
+Property	Description
+Model	tiiuae/falcon-rw-1b
+Size	~5.3GB
+Runs Offline	✅ Yes (after first download)
+Framework	Hugging Face Transformers
+Features	Text generation, token streaming
 
-Framework: Hugging Face Transformers
 
-Model Size: -5.3GB
 
-Supports: Token-by-token streaming, text generation
+🧪 Postman Collection (Optional Testing Tool)
+You can test this API using the included Postman collection:
 
-Features
-Offline LLM using Falcon RW 1B
+Collection Name: minivault-testcases
 
-Proxy architecture with FastAPI + Node.js
+Endpoints Included:
 
-POST and streaming endpoints
+POST /generate
 
-Prompt/response logging on both ends
+POST /generate-stream
 
-CLI for testing without a frontend
-```
+
+✅ How to Use:
+
+Open Postman
+
+Import the collection (minivault-testcases.json)
+
+Set the prompt in the body (raw JSON)
+
+Click Send and watch responses appear
+
+🔁 For streaming responses,run this command on server side "python cli.py --prompt "What is the capital of France?" --stream" this will give streaming responses. 
+
+
